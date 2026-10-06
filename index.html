@@ -6592,6 +6592,141 @@ var QS=[
 {q:'Context-switch 2 ms, quantum 20 ms. Overhead is about …',o:['9 %','2 %','20 %','50 %'],a:0,e:'2 / (20 + 2) = 9.09 %.'}
 ];
 
+     * ================= UNIT II : PROCESSES & CPU SCHEDULING (additive) ================= */
+var PCLS={P1:'s-b',P2:'s-ok',P3:'s-r',P4:'s-bg',P5:'s-b'};
+var GT=function(rows,total){var o='',W=500,x0=70;rows.forEach(function(r,i){var y=8+i*62;o+=T(4,y+20,r[0],'s-ts');
+ r[1].forEach(function(s,j){var x=x0+s[1]*W/total,w=(s[2]-s[1])*W/total;o+=X(x,y,w,30,s[0],PCLS[s[0]]||'s-b');o+=T(x,y+46,s[1],'s-ts','middle');if(j===r[1].length-1)o+=T(x+w,y+46,s[2],'s-ts','middle');});});
+ return SV(600,8+rows.length*62,'Gantt chart',o);};
+F.pstate=function(){var o=X(8,60,70,34,'New','s-bg')+X(170,60,80,34,'Ready','s-b')+X(370,60,90,34,'Running','s-r')+X(515,60,80,34,'Terminated','s-bg')+X(265,150,100,34,'Waiting','s-b')
+ +AR(78,77,170,77)+T(124,52,'admitted','s-ts','middle')
+ +AR(250,68,370,68)+T(310,58,'scheduler dispatch','s-ts','middle')
+ +AR(370,88,250,88)+T(310,104,'interrupt (time-out)','s-ts','middle')
+ +AR(460,77,515,77)+T(488,52,'exit','s-ts','middle')
+ +AR(410,94,350,150)+T(440,132,'I/O or event wait','s-ts','middle')
+ +AR(280,150,215,94)+T(150,132,'I/O or event completion','s-ts','middle');
+ return SV(600,200,'Process state diagram',o);};
+F.pcb=function(){var r=['Process state','Process number (PID)','Program counter','CPU registers','CPU-scheduling info (priority)','Memory-management info','Accounting info','I/O status info (open files)'],o=T(20,14,'Process Control Block (PCB)','s-tr');
+ r.forEach(function(s,i){o+=X(20,22+i*24,240,24,s,i<4?'s-b':'s-bg');});
+ o+=T(380,14,'Process in memory','s-tr')+X(340,22,180,34,'Stack (grows down)','s-r')+X(340,56,180,40,'free space','s-fr')+X(340,96,180,34,'Heap (grows up)','s-ok')+X(340,130,180,34,'Data (globals)','s-b')+X(340,164,180,34,'Text (program code)','s-bg');
+ return SV(600,222,'PCB fields and memory layout of a process',o);};
+F.queues=function(){var o=T(8,54,'Ready queue','s-ts')+X(100,34,58,32,'PCB 7')+X(166,34,58,32,'PCB 2')+X(232,34,58,32,'PCB 9')+AR(290,50,380,50)+X(380,34,70,32,'CPU','s-r')
+ +AR(415,66,415,112)+T(422,92,'I/O request','s-ts')+T(8,130,'I/O queue','s-ts')+X(100,110,58,32,'PCB 4')+X(166,110,58,32,'PCB 5')+AR(224,126,380,126)+X(380,112,70,32,'I/O|device','s-bg')
+ +Ln(450,128,520,128)+Ln(520,128,520,14)+Ln(520,14,129,14)+AR(129,14,129,34)+T(330,10,'I/O complete: PCB moves back to ready queue','s-ts','middle')
+ +T(300,172,'Other exits from CPU: time slice expired → ready queue · fork a child → wait · wait for interrupt → wait queue','s-ts','middle');
+ return SV(600,184,'Ready queue and I/O (device) queue',o);};
+F.ctxsw=function(){var o=T(6,48,'Process P0','s-ts')+T(6,98,'Operating system','s-ts')+T(6,148,'Process P1','s-ts')
+ +X(80,32,140,30,'P0 executing','s-b')+X(220,82,70,30,'save PCB0|load PCB1','s-r')+X(290,132,130,30,'P1 executing','s-ok')+X(420,82,70,30,'save PCB1|load PCB0','s-r')+X(490,32,100,30,'P0 resumes','s-b')
+ +Ln(80,62,490,62,'s-l','3 3')+Ln(80,162,290,162,'s-l','3 3')
+ +T(150,24,'interrupt or system call','s-ts','middle')+T(355,176,'P1 idle before / after','s-ts','middle')+T(300,196,'Context switch = pure overhead: no useful work is done while it happens','s-ts','middle');
+ return SV(600,206,'Context switch between two processes',o);};
+F.fork=function(){var o=X(220,4,160,30,'Parent calls fork()','s-b')+AR(300,34,170,66)+AR(300,34,430,66)
+ +X(95,66,150,42,'Parent|fork() returns child PID','s-b')+X(355,66,150,42,'Child (copy of parent)|fork() returns 0','s-ok')
+ +AR(170,108,170,146)+X(95,146,150,34,'wait() – blocked','s-bg')+AR(430,108,430,146)+X(355,146,150,34,'exec() loads new program','s-r')
+ +AR(430,180,430,208)+X(355,208,150,28,'exit()','s-bg')+Ln(355,222,170,222,'s-l')+AR(170,222,170,180)+T(262,216,'child ends, parent resumes','s-ts','middle');
+ return SV(600,246,'fork – exec – wait – exit life cycle',o);};
+F.ipc=function(){var o=FR(8,6,284,206,'Shared memory')+X(26,36,100,32,'Process A')+X(174,36,100,32,'Process B')+X(60,102,180,32,'Shared region','s-ok')+AR(76,68,110,102)+AR(224,68,190,102)+X(26,160,248,32,'Kernel (only for set-up)','s-r')
+ +FR(308,6,284,206,'Message passing')+X(326,36,100,32,'Process A')+X(474,36,100,32,'Process B')+X(360,102,180,32,'Message queue','s-ok')+AR(376,68,400,102)+AR(500,102,524,68)+X(326,160,248,32,'Kernel: send() / receive()','s-r');
+ return SV(600,222,'Two models of inter-process communication',o);};
+F.mt=function(){var o=FR(8,6,250,200,'Single-threaded process')+X(24,34,218,28,'code · data · files','s-ok')+X(24,76,104,30,'registers')+X(138,76,104,30,'stack')+X(70,126,120,28,'one thread','s-r')
+ +FR(274,6,320,200,'Multithreaded process')+X(290,34,288,28,'code · data · files (shared)','s-ok');
+ for(var i=0;i<3;i++){var x=290+i*98;o+=X(x,76,90,28,'registers')+X(x,108,90,28,'stack')+X(x,146,90,28,'thread '+(i+1),'s-r');}
+ return SV(600,216,'Single-threaded versus multithreaded process',o);};
+F.mtm=function(){var o='',t=['Many-to-One','One-to-One','Many-to-Many'];
+ t.forEach(function(n,p){var x0=4+p*198;o+=FR(x0,4,192,200,n);var ux=[x0+14,x0+74,x0+134];
+  ux.forEach(function(u){o+=X(u,34,44,24,'U','s-b');});o+=T(x0+96,76,'user threads','s-ts','middle');
+  if(p===0){o+=X(x0+56,150,80,26,'K','s-r');ux.forEach(function(u){o+=Ln(u+22,58,x0+96,150);});}
+  if(p===1){ux.forEach(function(u){o+=X(u,150,44,26,'K','s-r')+Ln(u+22,58,u+22,150);});}
+  if(p===2){o+=X(x0+36,150,50,26,'K','s-r')+X(x0+106,150,50,26,'K','s-r');o+=Ln(ux[0]+22,58,x0+61,150)+Ln(ux[1]+22,58,x0+61,150)+Ln(ux[1]+22,58,x0+131,150)+Ln(ux[2]+22,58,x0+131,150);}
+  o+=T(x0+96,194,'kernel threads','s-ts','middle');});
+ return SV(600,212,'Multithreading models',o);};
+F.gFCFS=function(){return GT([['FCFS: P1,P2,P3',[['P1',0,24],['P2',24,27],['P3',27,30]]],['Order: P2,P3,P1',[['P2',0,3],['P3',3,6],['P1',6,30]]]],30);};
+F.gSJF=function(){return GT([['SJF (non-pre)',[['P1',0,8],['P2',8,12],['P4',12,17],['P3',17,26]]],['SRTF (pre-empt)',[['P1',0,1],['P2',1,5],['P4',5,10],['P1',10,17],['P3',17,26]]]],26);};
+F.gRR=function(){return GT([['RR, q = 4',[['P1',0,4],['P2',4,7],['P3',7,10],['P1',10,14],['P1',14,18],['P1',18,22],['P1',22,26],['P1',26,30]]]],30);};
+F.gPri=function(){return GT([['Priority',[['P2',0,1],['P5',1,6],['P1',6,16],['P3',16,18],['P4',18,19]]]],19);};
+F.mlfq=function(){var o=FR(4,4,292,250,'Multilevel queue (fixed priority)')+X(20,28,260,34,'System processes (highest)','s-r')+X(20,70,260,34,'Interactive processes','s-b')+X(20,112,260,34,'Interactive editing','s-b')+X(20,154,260,34,'Batch processes','s-ok')+X(20,196,260,34,'Student processes (lowest)','s-bg')
+ +FR(304,4,292,250,'Multilevel feedback queue')+X(330,32,240,40,'Q0 · RR quantum 8 ms','s-b')+X(330,106,240,40,'Q1 · RR quantum 16 ms','s-b')+X(330,180,240,40,'Q2 · FCFS','s-ok')
+ +AR(450,72,450,106)+T(458,94,'not finished → demote','s-ts')+AR(450,146,450,180)+T(458,168,'not finished → demote','s-ts')+T(450,242,'new job enters Q0','s-ts','middle');
+ return SV(600,262,'Multilevel queue and multilevel feedback queue',o);};
+var GAL2=[['pstate','Process state diagram'],['pcb','PCB fields and memory layout of a process'],['queues','Ready queue and I/O queue (queueing diagram)'],['ctxsw','Context switch between two processes'],['fork','fork – exec – wait – exit'],['ipc','Shared memory vs message passing'],['mt','Single-threaded vs multithreaded process'],['mtm','Multithreading models'],['gFCFS','FCFS – effect of order (convoy effect)'],['gSJF','SJF and SRTF Gantt charts'],['gRR','Round Robin Gantt chart'],['gPri','Priority scheduling Gantt chart'],['mlfq','Multilevel queue and feedback queue']];
+
+var MODS2=[
+[`Process Concept`,`Process vs program · memory layout · states · PCB`,1,
+ ul([`<b>Process</b> = a program in execution. A <b>program</b> is a passive entity (file on disk); a <b>process</b> is an active entity with a program counter and a set of resources. One program can create many processes.`,
+ `<b>Layout in memory:</b> <b>text</b> (code), <b>data</b> (global variables), <b>heap</b> (dynamic memory), <b>stack</b> (function parameters, local variables, return addresses).`,
+ `<b>Process states:</b> <b>New</b> – being created · <b>Ready</b> – waiting for the CPU · <b>Running</b> – instructions executing · <b>Waiting</b> – waiting for I/O or an event · <b>Terminated</b> – finished.`,
+ `Only <b>one process per processor</b> can be running at any instant; many may be ready or waiting.`])
+ +fig('pstate','Process state diagram')
+ +h4('Process Control Block (PCB)')
+ +ul([`The PCB (task control block) is the OS data structure that holds <b>all information about one process</b>: state, PID, program counter, CPU registers, scheduling information, memory-management information, accounting information and I/O status.`,`When the CPU switches away from a process, its PCB stores the state so the process can <b>resume exactly where it stopped</b>.`])
+ +fig('pcb','PCB fields and memory layout of a process')
+ +tip(`High-probability: “Explain process states with a diagram” and “What is a PCB? List its contents.” Always draw the 5-state diagram with all transition labels.`)],
+[`Process Scheduling`,`Queues · schedulers · context switch`,1,
+ ul([`<b>Goal:</b> multiprogramming keeps the CPU busy all the time; time-sharing switches the CPU so quickly that users can interact with each program.`,
+ `<b>Scheduling queues:</b> <b>job queue</b> (all processes in the system), <b>ready queue</b> (in main memory, ready to run), <b>device (I/O) queues</b> (waiting for a particular device).`,
+ `A process moves between queues until it terminates. The ready queue is usually a linked list of PCBs.`])
+ +fig('queues','Queueing diagram: a process may leave the CPU by I/O request, time-slice expiry, fork or interrupt wait')
+ +h4('Types of schedulers')
+ +tb([`Scheduler`,`Also called`,`Function`,`Frequency`],[[`Long-term`,`Job scheduler`,`Selects processes from the pool to load into memory; controls degree of multiprogramming`,`Low (seconds – minutes)`],[`Short-term`,`CPU scheduler`,`Selects a ready process and allocates the CPU`,`Very high (ms)`],[`Medium-term`,`Swapper`,`Swaps processes out and back in to reduce multiprogramming`,`Intermediate`]],[1])
+ +ul([`<b>I/O-bound</b> process: spends more time doing I/O than computation (many short CPU bursts). <b>CPU-bound</b> process: few, very long CPU bursts. The long-term scheduler should select a <b>good mix</b>.`])
+ +h4('Context switch')
+ +ul([`Switching the CPU to another process requires <b>saving the state of the old process</b> in its PCB and <b>loading the saved state of the new process</b>.`,`Context-switch time is <b>pure overhead</b> (system does no useful work) and depends on hardware support (registers, memory-map). Typically a few microseconds to milliseconds.`])
+ +fig('ctxsw','Context switch from P0 to P1 and back')
+ +tip(`Remember the three schedulers by speed: <b>short-term is fastest</b>, long-term is slowest. Medium-term is used in time-sharing systems (swapping).`)],
+[`Operations on Processes`,`Creation · termination · fork/exec/wait`,1,
+ ul([`<b>Process creation:</b> a <b>parent</b> creates <b>children</b> using a system call, forming a <b>process tree</b>; each process has a PID. Resource sharing: parent and child share all / a subset / no resources. Execution: parent and child run concurrently, or the parent waits.`,
+ `<b>Address space:</b> child is a <b>duplicate of the parent</b> (UNIX fork) or a new program is loaded into the child (exec).`,
+ `<b>UNIX:</b> <b>fork()</b> creates a new process (returns 0 in the child, child PID in the parent, −1 on error); <b>exec()</b> replaces the process’ memory with a new program; <b>wait()</b> makes the parent wait for the child to finish.`])
+ +cd(`pid = fork();
+if (pid < 0)       { /* error */ }
+else if (pid == 0) { execlp("/bin/ls", "ls", NULL); }   /* child  */
+else               { wait(NULL); printf("Child complete"); } /* parent */`)
+ +fig('fork','Typical UNIX process creation')
+ +h4('Process termination')
+ +ul([`A process ends with <b>exit()</b> (asks the OS to delete it); the status is returned to the waiting parent and resources are de-allocated.`,`A parent may <b>abort</b> a child (child exceeded resources, task no longer needed, parent exiting). Some OSs use <b>cascading termination</b>.`,`<b>Zombie:</b> terminated process whose parent has not yet called wait() (entry remains in process table). <b>Orphan:</b> parent terminated without waiting; UNIX assigns <b>init</b> as new parent.`])
+ +tip(`If a program calls fork() n times in sequence (no conditions), total processes = <b>2ⁿ</b> (2ⁿ − 1 new children). Frequently asked output-tracing question.`)],
+[`Inter-Process Communication (IPC)`,`Shared memory · message passing · naming · sync · buffering`,1,
+ ul([`<b>Independent</b> processes cannot affect or be affected by others; <b>cooperating</b> processes can. Cooperation needs an IPC mechanism.`,`<b>Shared memory:</b> a region is shared; processes read / write it. Fast (kernel needed only to set up), but the processes must <b>synchronise</b> themselves.`,`<b>Message passing:</b> processes exchange messages with <b>send(message)</b> and <b>receive(message)</b>. Useful for small data and for distributed systems; slower (kernel involved each time) but no conflicts.`])
+ +fig('ipc','Shared memory versus message passing')
+ +tb([``,`Shared memory`,`Message passing`],[[`Speed`,`Faster`,`Slower (system calls)`],[`Kernel`,`Only for set-up`,`For every send / receive`],[`Synchronisation`,`By the user processes`,`Provided by the system`],[`Best for`,`Large data, same machine`,`Small data, distributed systems`]])
+ +h4('Message-passing design issues')
+ +ul([`<b>Direct communication:</b> send(P, msg) / receive(Q, msg) – processes name each other; link between exactly one pair.`,`<b>Indirect communication:</b> messages go to / from <b>mailboxes (ports)</b>; many processes may share a mailbox.`,`<b>Synchronisation:</b> blocking (synchronous) or non-blocking (asynchronous) send and receive. If both are blocking it is a <b>rendezvous</b>.`,`<b>Buffering (queue capacity):</b> <b>zero capacity</b> (no buffering, sender waits), <b>bounded capacity</b> (sender waits if full), <b>unbounded capacity</b> (sender never waits).`,`Other mechanisms: <b>pipes</b> (ordinary / named), sockets, RPC.`])],
+[`Cooperating Processes`,`Reasons · producer–consumer problem`,1,
+ ul([`<b>Reasons for cooperation:</b> <b>information sharing</b>, <b>computation speed-up</b> (parallel sub-tasks), <b>modularity</b>, <b>convenience</b>.`,
+ `<b>Producer–consumer problem:</b> the producer produces information that the consumer consumes. A buffer sits between them: <b>unbounded buffer</b> (no limit, only consumer waits) or <b>bounded buffer</b> (fixed size; producer waits if full, consumer waits if empty).`])
+ +cd(`#define BUFFER_SIZE 10
+item buffer[BUFFER_SIZE];  int in = 0, out = 0;   /* shared */
+
+/* Producer */                       /* Consumer */
+while (true) {                       while (true) {
+  while (((in+1) % BUFFER_SIZE)==out)  while (in == out)
+        ;  /* buffer full */                ;  /* buffer empty */
+  buffer[in] = next_produced;          next_consumed = buffer[out];
+  in = (in+1) % BUFFER_SIZE;           out = (out+1) % BUFFER_SIZE;
+}                                    }`)
+ +tip(`This simple solution holds at most <b>BUFFER_SIZE − 1</b> items (one slot is kept empty to tell full from empty). Using a counter fixes this but creates a race condition – leads to Unit III (synchronisation).`)],
+[`Threads`,`Concept · benefits · user and kernel threads`,1,
+ ul([`<b>Thread</b> = basic unit of CPU utilisation (lightweight process). It has its own <b>thread ID, program counter, register set and stack</b>, and shares with other threads of the same process the <b>code, data and open files (OS resources)</b>.`,
+ `<b>Benefits:</b> <b>responsiveness</b> (UI stays active), <b>resource sharing</b> (same address space), <b>economy</b> (cheaper creation and context switch than processes), <b>scalability</b> (use multiple cores).`])
+ +fig('mt','Single-threaded versus multithreaded process')
+ +tb([`Process`,`Thread`],[[`Heavyweight, own address space`,`Lightweight, shares address space`],[`Creation / switch is costly`,`Creation / switch is cheap`],[`IPC needed to communicate`,`Direct communication through shared data`],[`One process crash does not hurt others`,`One bad thread can kill the whole process`]])
+ +h4('User threads vs kernel threads')
+ +tb([``,`User-level threads`,`Kernel-level threads`],[[`Managed by`,`Thread library in user space`,`Operating system kernel`],[`Speed`,`Faster to create / switch`,`Slower (system calls)`],[`Blocking call`,`Blocks the entire process`,`Other threads continue`],[`Multicore use`,`Cannot run in parallel`,`Can run on different cores`],[`Examples`,`POSIX Pthreads, Java threads (library)`,`Windows, Linux, Solaris`]])
+ +ul([`<b>Multicore programming challenges:</b> dividing activities, balance, data splitting, data dependency, testing and debugging. <b>Parallelism:</b> data parallelism vs task parallelism.`])],
+[`Multithreading Models`,`Many-to-one · one-to-one · many-to-many · issues`,1,
+ ul([`A relationship must exist between user threads and kernel threads.`,`<b>Many-to-One:</b> many user threads map to one kernel thread. Efficient, but one blocking call blocks all and <b>no parallelism</b> on multicore (Green threads, GNU Portable Threads).`,`<b>One-to-One:</b> each user thread maps to a kernel thread. More concurrency and parallelism, but <b>creating many threads is costly</b>, so the number is limited (Windows, Linux).`,`<b>Many-to-Many:</b> many user threads multiplexed onto an equal or smaller number of kernel threads. Flexible; no limit on user threads; hard to implement. <b>Two-level model</b> = many-to-many + a user thread can be bound to a kernel thread.`])
+ +fig('mtm','Three multithreading models (U = user thread, K = kernel thread)')
+ +h4('Threading issues')
+ +ul([`<b>fork() and exec():</b> does fork duplicate only the calling thread or all threads? exec() replaces the whole process including all threads.`,`<b>Thread cancellation:</b> asynchronous (terminate immediately) vs deferred (target checks periodically).`,`<b>Signal handling:</b> deliver to the thread to which signal applies, to every thread, to selected threads, or to a designated thread.`,`<b>Thread pools:</b> create a number of threads in advance and reuse them – faster service, bounded thread count.`,`<b>Thread-specific data</b> (thread-local storage) and scheduler activations (communication between kernel and thread library).`,`<b>Thread libraries:</b> Pthreads (POSIX), Windows threads, Java threads.`])
+ +tip(`Draw the three-model diagram in the exam and write one advantage + one disadvantage under each. Table of comparison earns full marks.`)],
+[`CPU Scheduling: Basic Concepts & Criteria`,`Burst cycle · pre-emptive · dispatcher · criteria`,1,
+ ul([`<b>CPU–I/O burst cycle:</b> process execution is a cycle of CPU execution and I/O wait. Most bursts are short, a few are very long (exponential curve).`,
+ `<b>CPU scheduler</b> picks a process from the ready queue when a process (1) switches running → waiting, (2) running → ready, (3) waiting → ready, (4) terminates. Scheduling only under 1 and 4 is <b>non-preemptive</b>; otherwise <b>preemptive</b>.`,
+ `<b>Dispatcher:</b> gives control of the CPU to the selected process – context switch, switch to user mode, jump to the correct location. <b>Dispatch latency</b> = time to stop one process and start another.`])
+ +h4('Scheduling criteria')
+ +tb([`Criterion`,`Meaning`,`Goal`],[[`CPU utilisation`,`% of time CPU is busy`,`Maximise`],[`Throughput`,`Processes completed per unit time`,`Maximise`],[`Turnaround time (TAT)`,`Completion time − arrival time`,`Minimise`],[`Waiting time (WT)`,`Total time spent in the ready queue`,`Minimise`],[`Response time`,`Submission until first response (not output)`,`Minimise`]])
+ +eq(`TAT = Completion time − Arrival time &nbsp;·&nbsp; WT = TAT − Burst time`)
+ +tip(`Preemptive scheduling can cause race conditions when data is shared; non-preemptive is simple but one long process can hog the CPU.`)],
+
 /* ---------- ENGINE ---------- */
 var GAL=[['layers','Position of the OS between users and hardware'],['multiprog','Single program vs multiprogramming'],['rtos','Hard vs soft real-time deadlines'],['comp','OS components'],['dual','Dual-mode operation'],['syscall','Life of a system call'],['syscat','System-call categories'],['mono','Monolithic vs microkernel'],['layered','Layered approach'],['vm','Virtual machines'],['hyper','Type 1 vs Type 2 hypervisor'],['boot','Boot sequence']];
 var S,ROOT;
